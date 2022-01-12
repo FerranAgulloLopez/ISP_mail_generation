@@ -1,7 +1,9 @@
 # Others
 .idea/
 data/
-
+dataset_extraction/content
+dataset_extraction/threads - copia
+dataset_extraction/w3c-emails
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -131,3 +133,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+*.txt
