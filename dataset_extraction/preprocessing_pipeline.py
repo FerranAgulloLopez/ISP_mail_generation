@@ -81,9 +81,9 @@ if __name__ == '__main__':
         email_content['id'] = os.path.splitext(filename)[0]
         dataset.append(email_content)
 
-    with open(f'threads/dataset.json', 'w') as f:
+    with open(f'../data/threads/dataset.json', 'w') as f:
         json.dump(dataset, f)
 
     print(f'Filtered {attachment_emails} attachment emails')
     print(f'Successfully preprocessed {successfully_preprocessed_emails} emails')
-    print(f'Created {len(os.listdir("./threads"))} JSON files')
+    print(f'Created {len(os.listdir("../data/threads"))} JSON files')

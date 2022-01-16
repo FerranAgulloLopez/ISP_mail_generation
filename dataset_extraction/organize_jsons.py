@@ -8,7 +8,7 @@ if __name__ == '__main__':
     # file_list = os.listdir('./content')
     # file_list.sort()
 
-    with open('./threads/dataset.json', 'r') as f:
+    with open('../data/threads/dataset.json', 'r') as f:
         dataset = json.load(f)
     current_thread = []
     current_thread_id = dataset[0]['id'].split('-')[1]
@@ -37,4 +37,4 @@ if __name__ == '__main__':
     with open('threads/thread_{}.json'.format(current_thread_id), 'w') as f:
         json.dump(current_thread, f)
 
-    print('Created {} JSON files'.format(len(os.listdir('./threads'))))
+    print('Created {} JSON files'.format(len(os.listdir('../data/threads'))))
