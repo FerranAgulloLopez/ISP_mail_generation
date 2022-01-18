@@ -7,6 +7,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+GENERATOR_PRETRAINED_MODEL = '../../development/generator_fine_tuning/output_model/fine_tuned_gpt2_768_augmented.bin'
+
 
 # Application definition
 
