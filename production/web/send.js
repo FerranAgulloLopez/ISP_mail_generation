@@ -5,6 +5,9 @@ $("#mail_form").submit(function(e) {
     // var formData = JSON.stringify($("#mail_form").serializeArray());
     var form = $(this);
     console.log(form.serialize())
+
+    document.getElementById('out_title').innerHTML = ""
+    document.getElementById('out_content').innerHTML = "Generating..."
     // var actionUrl = form.attr('action');
     $.ajax({
         type: "POST",
@@ -16,11 +19,19 @@ $("#mail_form").submit(function(e) {
         success: function(data)
         {
           console.log(data)
-          alert(data); // show response from the php script.
+          document.getElementById('out_title').innerHTML = data["subject"].replace(/(?:\r\n|\r|\n)/g, '<br>')
+          document.getElementById('out_content').innerHTML = data["content"].replace(/(?:\r\n|\r|\n)/g, '<br>') // show response from the php script.
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
+          document.getElementById('out_title').innerHTML = "Mail Title"
+          document.getElementById('out_content').innerHTML = "Content"
           console.log(XMLHttpRequest, textStatus, errorThrown)
        }
     });
     
 });
+
+function reset_act(){
+  document.getElementById('out_title').innerHTML = "Mail Title"
+  document.getElementById('out_content').innerHTML = "Content"  
+}
