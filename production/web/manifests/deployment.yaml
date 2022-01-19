@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: production
+  labels:
+    app: web
+spec:
+  selector:
+    matchLabels:
+      module: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: web
+          image: SELECTED_REPOSITORY_DOCKER_IMAGE_URL
+          ports:
+            - name: web
+              containerPort: 8001
