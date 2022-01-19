@@ -62,6 +62,7 @@ Copy the script file to Google Colab. Follow the guide described inside the scri
     	- ip: IP to use
     	- port: port to use
     - command: php -S ip:port
+    - available at ip:port
 - With docker: using the Dockerfile that is along the web files
     - variables:
     	- docker_image_name: name of the docker image
@@ -69,6 +70,7 @@ Copy the script file to Google Colab. Follow the guide described inside the scri
     	- port: port to use
     - build image: sudo docker build -t docker_image_name .
     - run image: sudo docker run --rm -p port:port --network="host" --name docker_container_name docker_image_name
+    - available at localhost:port
 - With Kubernetes/Openshift: using the configuration files that are inside the manifests directory
     - variables:
     	- namespace: namespace to use
@@ -81,6 +83,7 @@ Copy the script file to Google Colab. Follow the guide described inside the scri
     - run: apply the configuration files
     	- kubectl apply -f deployment.yaml
     	- kubectl apply -f service.yaml
+    - available at api:8000 from inside the K8s cluster
     	
 #### API (production/api/)
 For running the API is needed first to fine tune a generator model with the corresponding script from the development phase. That model will be mounted inside the container in running time if using docker or K8s/Openshift.
@@ -113,9 +116,11 @@ For running the API is needed first to fine tune a generator model with the corr
     	- update repository image: change the line 19 of the deployment.yaml file with the url of the docker image from the selected repository
     	- select port: we are using the port 8001 in the configuration files but it can be changed
     	- upload generator model: upload the generator model to some kind of storage public or private
-    	- update storage: update the storage.yaml file to comply with the chosen storage
+    	- upload scorer model: upload the scorer model to some kind of storage public or private
+    	- update storage: update the generator_model_storage.yaml  and scorer_model_storage.yaml files to comply with the chosen storage
     - run: apply the configuration files
-        - kubectl apply -f storage.yaml
+        - kubectl apply -f generator_model_storage.yaml
+        - kubectl apply -f scorer_model_storage.yaml
     	- kubectl apply -f deployment.yaml
     	- kubectl apply -f service.yaml
 
