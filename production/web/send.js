@@ -13,12 +13,13 @@ $("#mail_form").submit(function(e) {
         type: "POST",
         dataType: 'json',
         crossDomain: true,
-        url: "http://127.0.0.1:8000/api/mails/",
+        url: "http://0.0.0.0:8000/api/mails/",
         data: form.serialize(), // serializes the form's elements.
         xhrFields: { withCredentials: true },
         success: function(data)
         {
           console.log(data)
+          //document.getElementById('out_score').innerHTML = data["score"].replace(/(?:\r\n|\r|\n)/g, '<br>')
           document.getElementById('out_title').innerHTML = data["subject"].replace(/(?:\r\n|\r|\n)/g, '<br>')
           document.getElementById('out_content').innerHTML = data["content"].replace(/(?:\r\n|\r|\n)/g, '<br>') // show response from the php script.
         },
