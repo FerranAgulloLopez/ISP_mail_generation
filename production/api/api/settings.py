@@ -1,14 +1,21 @@
+import os
+import logging.config
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-^_*0_#h=30*%9^!ca)sinn_ab0sultu)x#)m6agtp+z-902_@1'
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY', 'django_insecure')
+DEBUG = os.getenv('DEBUG', 'True')
+if DEBUG.lower() in ('yes', 'true', 't', 'y', '1'):
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = []
-
-GENERATOR_PRETRAINED_MODEL = '../../development/generator_fine_tuning/output_model/fine_tuned_gpt2_768_augmented.bin'
-
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '0.0.0.0').split(',')
+GENERATOR_PRETRAINED_MODEL = os.getenv(
+    'GENERATOR_PRETRAINED_MODEL',
+    '../../development/generator_fine_tuning/output_model/fine_tuned_gpt2_768_augmented.bin'
+)
 
 # Application definition
 
@@ -115,3 +122,33 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Logging
+if not DEBUG:
+    # Clear prev config
+    LOGGING_CONFIG = None
+
+    # Get loglevel from env
+    LOGLEVEL = os.getenv('LOGLEVEL', 'info').upper()
+
+    logging.config.dictConfig({
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'console': {
+                'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(module)s %(process)d %(thread)d %(message)s',
+            },
+        },
+        'handlers': {
+            'console': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'console',
+            },
+        },
+        'loggers': {
+            '': {
+                'level': LOGLEVEL,
+                'handlers': ['console', ],
+            },
+        },
+    })
