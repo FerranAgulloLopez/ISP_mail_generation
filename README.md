@@ -68,7 +68,7 @@ Copy the script file to Google Colab. Follow the guide described inside the scri
     	- docker_container_name: name of the docker container
     	- port: port to use
     - build image: sudo docker build -t docker_image_name .
-    - run image: sudo docker run -p port:port --name docker_container_name docker_image_name
+    - run image: sudo docker run --rm -p port:port --network="host" --name docker_container_name docker_image_name
 - With Kubernetes/Openshift: using the configuration files that are inside the manifests directory
     - variables:
     	- namespace: namespace to use
@@ -86,9 +86,11 @@ Copy the script file to Google Colab. Follow the guide described inside the scri
 For running the API is needed first to fine tune a generator model with the corresponding script from the development phase. That model will be mounted inside the container in running time if using docker or K8s/Openshift.
 - In plain OS: 
     - set up:
-        - insert the fine tuned generator inside the directory input_model/ with the name input_model.bin
+        - insert the fine tuned generator inside the directory input_generator_model/ with the name input_model.bin
         - install python3.9
         - install the required python packages: pip3 install -r requirements.txt
+        - install the scorer and download a checkpoint: follow the guide in the [official documentation](https://github.com/google-research/bleurt)
+        - insert the chosen pretrained scorer inside the directory input_scorer_model/
         - initialize internal structure: python3 manage.py migrate
     - run: gunicorn --bind :8000 --workers 3 api.wsgi:application
     - for debugging purposes it can also be run as follows: DEBUG=True python3 manage.py runserver
@@ -98,8 +100,9 @@ For running the API is needed first to fine tune a generator model with the corr
     	- docker_container_name: name of the docker container
     	- port: port to use
     	- generator_model: local path to the generator model
+    	- scorer_model: local path to the scorer model
     - build image: sudo docker build -t docker_image_name .
-    - run image: sudo docker run -p 8000:8000 --mount type=bind,source=generator_model,target=/usr/application/app/input_model/input_model.bin,readonly --rm --name api api python3 manage.py migrate --no-input && gunicorn --bind :8000 --workers 3 api.wsgi:application
+    - run image: sudo docker run --rm -p 8000:8000 --mount type=bind,source=generator_model,target=/usr/application/app/input_generator_model/input_model.bin,readonly --mount type=bind,source=scorer_model,target=/usr/application/app/input_scorer_model,readonly --rm --name api api python3 manage.py migrate --no-input && gunicorn --bind :8000 --workers 3 api.wsgi:application
 - With Kubernetes/Openshift: using the configuration files that are inside the manifests directory
     - variables:
     	- namespace: namespace to use

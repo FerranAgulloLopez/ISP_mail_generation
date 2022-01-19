@@ -15,7 +15,13 @@ WORKDIR /usr/application/app
 COPY /requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
+# install bleurt
+RUN git clone https://github.com/google-research/bleurt.git
+WORKDIR /usr/application/app/bleurt
+RUN pip install .
+
 # copy the files inside the working directory (the .gitignore file ignores the not necessary files)
+WORKDIR /usr/application/app
 COPY / .
 
 # change directory permissions to allow access for not root users

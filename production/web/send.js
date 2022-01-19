@@ -6,8 +6,9 @@ $("#mail_form").submit(function(e) {
     var form = $(this);
     console.log(form.serialize())
 
-    document.getElementById('out_title').innerHTML = ""
-    document.getElementById('out_content').innerHTML = "Generating..."
+    document.getElementById('out_score').innerHTML = ""
+    document.getElementById('out_title').innerHTML = "Generating..."
+    document.getElementById('out_content').innerHTML = ""
     // var actionUrl = form.attr('action');
     $.ajax({
         type: "POST",
@@ -19,8 +20,8 @@ $("#mail_form").submit(function(e) {
         success: function(data)
         {
           console.log(data)
-          //document.getElementById('out_score').innerHTML = data["score"].replace(/(?:\r\n|\r|\n)/g, '<br>')
-          document.getElementById('out_title').innerHTML = data["subject"].replace(/(?:\r\n|\r|\n)/g, '<br>')
+          document.getElementById('out_score').innerHTML = "Score: " + data["score"]
+          document.getElementById('out_title').innerHTML = "Subject: " + data["subject"].replace(/(?:\r\n|\r|\n)/g, '<br>')
           document.getElementById('out_content').innerHTML = data["content"].replace(/(?:\r\n|\r|\n)/g, '<br>') // show response from the php script.
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -34,6 +35,7 @@ $("#mail_form").submit(function(e) {
 });
 
 function reset_act(){
-  document.getElementById('out_title').innerHTML = "Mail Title"
-  document.getElementById('out_content').innerHTML = "Content"  
+  document.getElementById('out_score').innerHTML = "Score"  
+  document.getElementById('out_title').innerHTML = "Mail subject"
+  document.getElementById('out_content').innerHTML = "Content"
 }

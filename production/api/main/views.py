@@ -34,7 +34,7 @@ class MailViewSet(viewsets.ViewSet):
         if input_serializer.is_valid():
             subject = input_serializer.data['subject']
             summary = input_serializer.data['summary']
-            content = Domain.generate_mail(subject, summary)
-            return Response({'subject': subject, 'content': content, 'summary': summary}, status=status.HTTP_200_OK)
+            content, score = Domain.generate_mail(subject, summary)
+            return Response({'subject': subject, 'content': content, 'summary': summary, "score": score}, status=status.HTTP_200_OK)
         else:
             return Response(input_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

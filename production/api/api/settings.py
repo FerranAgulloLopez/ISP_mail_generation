@@ -11,10 +11,14 @@ if DEBUG.lower() in ('yes', 'true', 't', 'y', '1'):
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '0.0.0.0').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '0.0.0.0,127.0.0.1').split(',')
 GENERATOR_PRETRAINED_MODEL = os.getenv(
     'GENERATOR_PRETRAINED_MODEL',
-    './input_model/input_model.bin'
+    './input_generator_model/input_model.bin'
+)
+SCORE_PRETRAINED_MODEL = os.getenv(
+    'SCORE_PRETRAINED_MODEL',
+    './input_scorer_model'
 )
 
 # Application definition

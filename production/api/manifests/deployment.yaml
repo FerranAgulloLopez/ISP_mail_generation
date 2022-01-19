@@ -19,7 +19,9 @@ spec:
           image: SELECTED_REPOSITORY_DOCKER_IMAGE_URL
           volumeMounts:
             - name: generator-model
-              mountPath: "/usr/application/app/input_model/input_model.bin"
+              mountPath: "/usr/application/app/input_generator_model/input_model.bin"
+            - name: scorer-model
+              mountPath: "/usr/application/app/input_scorer_model"
           ports:
             - containerPort: 8000
               name: api
@@ -31,3 +33,7 @@ spec:
         - name: generator-model
           persistentVolumeClaim:
             claimName: generator-model
+      volumes:
+        - name: scorer-model
+          persistentVolumeClaim:
+            claimName: scorer-model

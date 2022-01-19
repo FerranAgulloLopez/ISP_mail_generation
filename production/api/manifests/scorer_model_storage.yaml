@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: scorer-model
+  namespace: production
+spec:
+  storageClassName: SELECTED_STORAGE
+  accessModes:
+    - ReadMany
+  resources:
+    requests:
+      storage: 2000Mi

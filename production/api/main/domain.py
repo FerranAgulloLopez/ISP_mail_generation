@@ -1,4 +1,5 @@
 import torch
+from bleurt import score
 from django.conf import settings
 from transformers import AutoTokenizer, AutoConfig, AutoModelForPreTraining
 
@@ -12,13 +13,17 @@ SPECIAL_TOKENS = {
 }
 
 
-def get_tokenizer(special_tokens=None):
+def clamp(n, smallest, largest):
+    return max(smallest, min(n, largest))
+
+
+def get_generator_tokenizer(special_tokens=None):
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
     tokenizer.add_special_tokens(special_tokens)
     return tokenizer
 
 
-def get_model(tokenizer):
+def get_generator_model(tokenizer):
     config = AutoConfig.from_pretrained(
         MODEL,
         bos_token_id=tokenizer.bos_token_id,
@@ -33,20 +38,26 @@ def get_model(tokenizer):
     return model
 
 
+def get_scorer_model():
+    checkpoint = settings.SCORE_PRETRAINED_MODEL
+    return score.BleurtScorer(checkpoint)
+
+
 class Domain:
-    tokenizer = get_tokenizer(SPECIAL_TOKENS)
-    model = get_model(tokenizer)
-    model.eval()
+    tokenizer = get_generator_tokenizer(SPECIAL_TOKENS)
+    generator_model = get_generator_model(tokenizer)
+    generator_model.eval()
+    scorer_model = get_scorer_model()
 
     @classmethod
-    def generate_mail(cls, subject: str, summary: str):
+    def generate_mail(cls, subject: str, summary: str) -> (str, float):
         prompt = SPECIAL_TOKENS['bos_token'] + subject + \
                  SPECIAL_TOKENS['sep_token'] + summary + SPECIAL_TOKENS['sep_token']
 
         generated = torch.tensor(cls.tokenizer.encode(prompt)).unsqueeze(0)
 
         # beam-search text generation:
-        sample_outputs = cls.model.generate(
+        sample_outputs = cls.generator_model.generate(
             generated,
             do_sample=True,
             max_length=768,
@@ -57,4 +68,13 @@ class Domain:
         )
         text = cls.tokenizer.decode(sample_outputs[0], skip_special_tokens=True)
         a = len(subject) + len(summary)
-        return text[a:]
+        content = text[a:]
+        score = cls.generate_score(subject, summary, content)
+        return content, score
+
+    @classmethod
+    def generate_score(cls, subject: str, summary: str, content: str):
+        references = [subject + summary]
+        candidates = [content]
+        scores = cls.scorer_model.score(references=references, candidates=candidates)
+        return clamp(scores[0], 0, 1)

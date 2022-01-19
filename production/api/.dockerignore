@@ -1,2 +1,3 @@
 db.sqlite3
-input_model/
+input_generator_model/
+input_scorer_model/
