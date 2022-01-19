@@ -25,6 +25,7 @@ $("#mail_form").submit(function(e) {
         error: function(XMLHttpRequest, textStatus, errorThrown) {
           document.getElementById('out_title').innerHTML = "Mail Title"
           document.getElementById('out_content').innerHTML = "Content"
+          alert("Message not reached!\nEnsure backend is active.")
           console.log(XMLHttpRequest, textStatus, errorThrown)
        }
     });
