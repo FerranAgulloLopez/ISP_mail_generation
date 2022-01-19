@@ -97,6 +97,7 @@ For running the API is needed first to fine tune a generator model with the corr
         - initialize internal structure: python3 manage.py migrate
     - run: gunicorn --bind :8000 --workers 3 api.wsgi:application
     - for debugging purposes it can also be run as follows: DEBUG=True python3 manage.py runserver
+    - available at localhost:8000
 - With docker: using the Dockerfile that is along the web files
     - variables:
     	- docker_image_name: name of the docker image
@@ -106,6 +107,7 @@ For running the API is needed first to fine tune a generator model with the corr
     	- scorer_model: local path to the scorer model
     - build image: sudo docker build -t docker_image_name .
     - run image: sudo docker run --rm -p 8000:8000 --mount type=bind,source=generator_model,target=/usr/application/app/input_generator_model/input_model.bin,readonly --mount type=bind,source=scorer_model,target=/usr/application/app/input_scorer_model,readonly --rm --name api api python3 manage.py migrate --no-input && gunicorn --bind :8000 --workers 3 api.wsgi:application
+    - available at localhost:8000
 - With Kubernetes/Openshift: using the configuration files that are inside the manifests directory
     - variables:
     	- namespace: namespace to use
