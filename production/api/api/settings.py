@@ -5,7 +5,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django_insecure')
-DEBUG = os.getenv('DEBUG', 'True')
+DEBUG = os.getenv('DEBUG', 'False')
 if DEBUG.lower() in ('yes', 'true', 't', 'y', '1'):
     DEBUG = True
 else:
@@ -14,7 +14,7 @@ else:
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '0.0.0.0').split(',')
 GENERATOR_PRETRAINED_MODEL = os.getenv(
     'GENERATOR_PRETRAINED_MODEL',
-    '../../development/generator_fine_tuning/output_model/fine_tuned_gpt2_768_augmented.bin'
+    './input_model/input_model.bin'
 )
 
 # Application definition

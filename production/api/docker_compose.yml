@@ -1,0 +1,53 @@
+version: "3.9"
+services:
+  maas_database:
+    container_name: maas_database
+    image: postgres:10
+    restart: always
+    environment:
+      POSTGRES_DB: models
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: /run/secrets/secret_database_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - type: bind
+        source: /var/maas_database/data
+        target: /var/lib/postgresql/data/pgdata
+      - type: bind
+        source: /var/maas_database/init_scripts
+        target: /docker-entrypoint-initdb.d
+  maas_service:
+    container_name: maas_service
+    image: maas_service
+    restart: always
+    environment:
+      SECRET_KEY: /run/secrets/secret_django_secret_key
+      DEBUG: 'False'
+      DATABASE_ENGINE: postgresql
+      DATABASE_NAME: models
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: /run/secrets/secret_database_password
+      DATABASE_HOST: maas_database
+      DATABASE_PORT: 5432
+    volumes:
+      - type: bind
+        source: /var/maas_service/files
+        target: /usr/application/storage
+    ports:
+      - 0.0.0.0:8000:8000/tcp
+    command: bash -c "python3 manage.py migrate --no-input && gunicorn --bind :8000 --workers 3 BSC_MaaS.wsgi:application"
+  application_registry:
+    container_name: application_registry
+    image: registry:2.7.1
+    restart: always
+    volumes:
+      - type: bind
+        source: /var/application_registry
+        target: /mnt/registry
+    ports:
+      - 127.0.0.1:5000:5000
+secrets:
+  secret_database_password:
+    external: true
+  secret_django_secret_key:
+    external: true

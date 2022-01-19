@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: bsc-internal
+  labels:
+    app: api
+spec:
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: SELECTED_REPOSITORY_DOCKER_IMAGE_URL
+          volumeMounts:
+            - name: generator-model
+              mountPath: "/usr/application/app/input_model/input_model.bin"
+          ports:
+            - containerPort: 8000
+              name: api
+      initContainers:
+        - name: api-initialization
+          image: SELECTED_REPOSITORY_DOCKER_IMAGE_URL
+          command: ["python3", "manage.py", "migrate"]
+      volumes:
+        - name: generator-model
+          persistentVolumeClaim:
+            claimName: generator-model

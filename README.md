@@ -55,7 +55,7 @@ Copy the script file to Google Colab. Follow the guide described inside the scri
 
 ### Production
 
-#### Web
+#### Web (production/web/)
 - In plain OS
     - set up: install php
     - variables:
@@ -82,9 +82,39 @@ Copy the script file to Google Colab. Follow the guide described inside the scri
     	- kubectl apply -f deployment.yaml
     	- kubectl apply -f service.yaml
     	
-## API
-- api (production/api): ... (pre -> put model in place)
-
+#### API (production/api/)
+For running the API is needed first to fine tune a generator model with the corresponding script from the development phase. That model will be mounted inside the container in running time if using docker or K8s/Openshift.
+- In plain OS: 
+    - set up:
+        - insert the fine tuned generator inside the directory input_model/ with the name input_model.bin
+        - install python3.9
+        - install the required python packages: pip3 install -r requirements.txt
+        - initialize internal structure: python3 manage.py migrate
+    - run: gunicorn --bind :8000 --workers 3 api.wsgi:application
+    - for debugging purposes it can also be run as follows: DEBUG=True python3 manage.py runserver
+- With docker: using the Dockerfile that is along the web files
+    - variables:
+    	- docker_image_name: name of the docker image
+    	- docker_container_name: name of the docker container
+    	- port: port to use
+    	- generator_model: local path to the generator model
+    - build image: sudo docker build -t docker_image_name .
+    - run image: sudo docker run -p 8000:8000 --mount type=bind,source=generator_model,target=/usr/application/app/input_model/input_model.bin,readonly --rm --name api api python3 manage.py migrate --no-input && gunicorn --bind :8000 --workers 3 api.wsgi:application
+- With Kubernetes/Openshift: using the configuration files that are inside the manifests directory
+    - variables:
+    	- namespace: namespace to use
+    - set up: 
+    	- create namespace -> kubectl create namespace namespace
+    	- create image: create the docker image with the steps shown before
+    	- upload image: upload the image to a docker repository, public or private (OpenShift comes with one, you can make use of it)
+    	- update repository image: change the line 19 of the deployment.yaml file with the url of the docker image from the selected repository
+    	- select port: we are using the port 8001 in the configuration files but it can be changed
+    	- upload generator model: upload the generator model to some kind of storage public or private
+    	- update storage: update the storage.yaml file to comply with the chosen storage
+    - run: apply the configuration files
+        - kubectl apply -f storage.yaml
+    	- kubectl apply -f deployment.yaml
+    	- kubectl apply -f service.yaml
 
 ## License
 Free use of this software is granted under the terms of the Apache License 2.0
